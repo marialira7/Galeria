@@ -1,8 +1,10 @@
 package moreira.lira.galeria;
 
 import android.os.Bundle;
+import android.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -20,5 +22,14 @@ public class PhotoActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Toolbar toolbar = findViewById(R.id.tbPhoto);
+        setSupportActionBar(toolbar);
+        //obtém da Activity a ActionBar padrão
+        ActionBar actionBar = getSupportActionBar();
+        //habilita o botão de voltar na ActionBar
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void setSupportActionBar(Toolbar toolbar) {
     }
 }

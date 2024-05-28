@@ -1,6 +1,7 @@
 package moreira.lira.galeria;
 
 import android.os.Bundle;
+import android.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +20,20 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+
         });
+        //obtendo elemento tbmain
+        Toolbar toolbar = findViewById(R.id.tbMain);
+        //dizendo para o mainactivity que agr o tbmain é actionbar
+        setSupportActionBar(toolbar);
+
+        //obtendo elemento tbphoto
+        Toolbar toolbar = findViewById(R.id.tbPhoto);
+        //dizendo para o mainactivity que agr o tbphoto é actionbar
+        setSupportActionBar(toolbar);
+    }
+
+    private void setSupportActionBar(Toolbar toolbar) {
+
     }
 }
