@@ -1,20 +1,28 @@
 package moreira.lira.galeria;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.io.File;
+
 public class PhotoActivity extends AppCompatActivity {
+    String photoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +34,18 @@ public class PhotoActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        //obtendo o endereço de imagem da itenção
+        Intent i = getIntent();
+        photoPath = i.getStringExtra("photo_path");
+
+        //carregue a foto em um Bitmap
+        Bitmap bitmap = Util.getBitmap(photoPath);
+        ImageView imPhoto = findViewById(R.id.imPhoto);
+        imPhoto.setImageBitmap(bitmap);
+
         Toolbar toolbar = findViewById(R.id.tbPhoto);
         setSupportActionBar(toolbar);
+
         //obtém da Activity a ActionBar padrão
         ActionBar actionBar = getSupportActionBar();
         //habilita o botão de voltar na ActionBar
@@ -54,8 +72,15 @@ public class PhotoActivity extends AppCompatActivity {
                 return super .onOptionsItemSelected(item);
 
         }
+   void sharePhoto() {
+        // capacitando o compartilhamento
+        Uri photoUri = FileProvider.getUriForFile(PhotoActivity.this, "tamanini.ferreira.galeria.fileprovider", new File(photoPath));
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.putExtra(Intent.EXTRA_STREAM, photoUri);
+        i.setType("image/jpeg");
+        startActivity(i);}
     }
 
     private void sharePhoto() {
     }
-} 
+}
