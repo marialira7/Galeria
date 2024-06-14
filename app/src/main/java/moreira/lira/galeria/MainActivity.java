@@ -105,11 +105,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     //toda vez que o item no toolbar for selecionado sera executado o codigo que abre a camera
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-    switch (item.getItemId()) {
-        case R.id.opCamera:
-            dispatchTakePictureIntent();
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.opCamera:
+                dispatchTakePictureIntent();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
