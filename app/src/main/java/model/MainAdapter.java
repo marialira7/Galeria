@@ -6,12 +6,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainAdapter extends RecyclerView.Adapter {
-
     MainActivity mainActivity;
     List<String> photos;
 
@@ -22,14 +23,12 @@ public class MainAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        //obtendo o inlador de layout
         LayoutInflater inflater = LayoutInflater.from(mainActivity);
+        //criando os elementos de interface necesários
         View v = inflater.inflate(R.layout.list_item, parent, false);
         return new MyViewHolder(v);
-
-        @Override
-        public int getItemCount() {
-            return photos.size();
-        }
+    }
 
 @Override
 public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
@@ -45,10 +44,10 @@ public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int 
     //é definido oq acontece após o click do botão
     imPhoto.setOnClickListener(new View.OnClickListener() {
         @Override
-            public void onClick(View v) {
-
-            mainActivity.starPhotoActivity(photos.get(position));
-        }
+            public void onClick(View v) { mainActivity.starPhotoActivity(photos.get(position));
+        });
     }
-}
+    }
+    @Override
+            public int getItemCount() {return photos.size();}
 }

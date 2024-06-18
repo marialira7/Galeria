@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.GridLayout;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -19,6 +20,8 @@ import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,10 +30,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import model.MainAdapter;
+
 public class MainActivity extends AppCompatActivity {
+    List<String> photos = new ArrayList<>();
+    MainAdapter mainAdapter;
     static int RESULT_TAKE_PICTURE = 1;
     String currentPhotoPath;
-}
+    static int RESULT_REQUEST_PERMISSION = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +48,55 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+
+            List<String> permissions = new ArrayList<>();
+            permissions.add(Manifest.permission.CAMERA);
+            checkForPermissions(permissions);
         });
+
+        //obtendo elemento tbmain
+        Toolbar toolbar = findViewById(R.id.tbMain);
+        //dizendo para o mainactivity que agr o tbmain é actionbar
+        setSupportActionBar(toolbar);
+
+        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File[] files = dir.listFiles();
+            for(int i = 0; i < files.length; i++) {
+                photos.add(files[i].getAbsolutePath());
+
+                mainAdapter = new MainAdapter(MainActivity.this, photos);
+                RecyclerView rvGallery = findViewById(R.id.rvGallery);
+                rvGallery.setAdapter(mainAdapter);
+                float w = getResources().getDimension(R.dimen.itemWidth);
+                int numberOfColumns = Util.calculateNoOfColumns(MainActivity.this, w);
+
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, numberOfColumns);
+                rvGallery.setLayoutManager(gridLayoutManager);
+            }
+        @Override
+        //criando as opções do menu definidas no arquivo/adiciona as definições no menu da activity
+        public boolean onCreateOptionsMenu(Menu menu) {
+            super.onCreateOptionsMenu(menu);
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.main_activity_tb, menu);
+            return true;
+        }
+        @Override
+        //toda vez que o item no toolbar for selecionado sera executado o codigo que abre a camera
+        public boolean onOptionsItemSelected(@NonNull MenuItem item){
+            switch (item.getItemId()) {
+                case R.id.opCamera:
+                    dispatchTakePictureIntent();
+                    return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+            }
+        }
+        public void starPhotoActivity(String photoPath) {
+                Intent i = new Intent(MainActivity.this, PhotoActivity.class);
+                i.putExtra("photo_path", photoPath);
+                startActivity;
+        }
         private void dispatchTakePictureIntent() {
             File f = null;
             try {
@@ -52,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         currentPhotoPath = f.getAbsolutePath();
-
         if(f != null) {
             Uri fUri = FileProvider.getUriForFile(MainActivity.this, "moreira.lira.galeria.fileprovider", f);
             Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -80,37 +135,53 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        //obtendo elemento tbmain
-        Toolbar toolbar = findViewById(R.id.tbMain);
-        //dizendo para o mainactivity que agr o tbmain é actionbar
-        setSupportActionBar(toolbar);
-
-        //obtendo elemento tbphoto
-        Toolbar toolbar = findViewById(R.id.tbPhoto);
-        //dizendo para o mainactivity que agr o tbphoto é actionbar
-        setSupportActionBar(toolbar);
-    }
-
-    private void setSupportActionBar(Toolbar toolbar) {
-
-    }
-    @Override
-    //criando as opções do menu definidas no arquivo/adiciona as definições no menu da activity
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_activity_tb, menu);
-        return true;
-    }
-    @Override
-    //toda vez que o item no toolbar for selecionado sera executado o codigo que abre a camera
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.opCamera:
-                dispatchTakePictureIntent();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        private void checkForPermissions(List<String> permissions) {
+            List<String> permissionsNotGranted = new ArrayList<>();
+            for (String permission : permissions) {
+                if (!hasPermission(permission)) {
+                    permissionsNotGranted.add(permission);
+                }
+            }
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if(permissionsNotGranted.size() > 0) {
+                    requestPermissions(permissionsNotGranted.toArray(new String[permissionsNotGranted.size()]),RESULT_REQUEST_PERMISSION);
+                }
+            }
         }
-    }
-}
+        private boolean hasPermission(String permission) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return ActivityCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_GRANTED;
+            }
+            return false;
+        }
+        @Override
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            final List<String> permissionsRejected = new ArrayList<>();
+            if(requestCode == RESULT_REQUEST_PERMISSION) {
+                for(String permission : permissions) {
+                    if(!hasPermission(permission)) {
+                        permissionsRejected.add(permission);
+                    }
+                }
+            }
+            if(permissionsRejected.size() > 0) {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if(shouldShowRequestPermissionRationale(permissionsRejected.get(0))){
+                        new AlertDialog.Builder(MainActivity.this).
+                                setMessage("Para usar essa app é preciso conceder essas permissões").
+                                setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        requestPermissions(permissionsRejected.toArray(new String[permissionsRejected.size()]), RESULT_REQUEST_PERMISSION);
+                                    }
+                                    }).create().show();
+                                    }
+                                }
+
+                                }
+                }
+            }
+
+            }
+

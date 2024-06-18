@@ -81,6 +81,12 @@ public class PhotoActivity extends AppCompatActivity {
         startActivity(i);}
     }
 
+    //código para compartilhamento da foto/imagem
     private void sharePhoto() {
+        Uri photoUri = FileProvider.getUriForFile(PhotoActivity.this, "moreira.lira.galeria.fileprovider", new File(photoPath));
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.putExtra(Intent.EXTRA_STREAM, photoUri);
+        i.setType("image/jpeg");
+        startActivity(i);
     }
 }
