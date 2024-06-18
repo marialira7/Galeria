@@ -62,6 +62,7 @@ public class PhotoActivity extends AppCompatActivity {
         inflater.inflate(R.menu.photo_activity_tb, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -69,16 +70,17 @@ public class PhotoActivity extends AppCompatActivity {
                 sharePhoto();
                 return true;
             default:
-                return super .onOptionsItemSelected(item);
+                return super.onOptionsItemSelected(item);
 
         }
-   void sharePhoto() {
-        // capacitando o compartilhamento
-        Uri photoUri = FileProvider.getUriForFile(PhotoActivity.this, "tamanini.ferreira.galeria.fileprovider", new File(photoPath));
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.putExtra(Intent.EXTRA_STREAM, photoUri);
-        i.setType("image/jpeg");
-        startActivity(i);}
+        void sharePhoto () {
+            // capacitando o compartilhamento
+            Uri photoUri = FileProvider.getUriForFile(PhotoActivity.this, "tamanini.ferreira.galeria.fileprovider", new File(photoPath));
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.putExtra(Intent.EXTRA_STREAM, photoUri);
+            i.setType("image/jpeg");
+            startActivity(i);
+        }
     }
 
     //código para compartilhamento da foto/imagem
