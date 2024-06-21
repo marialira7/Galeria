@@ -8,12 +8,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -52,8 +52,6 @@ public class PhotoActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
-    private void setSupportActionBar(Toolbar toolbar) {
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -65,22 +63,11 @@ public class PhotoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.opShare:
-                sharePhoto();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-
+        if (item.getItemId() == R.id.opShare) {
+            sharePhoto();
+            return true;
         }
-        void sharePhoto () {
-            // capacitando o compartilhamento
-            Uri photoUri = FileProvider.getUriForFile(PhotoActivity.this, "tamanini.ferreira.galeria.fileprovider", new File(photoPath));
-            Intent i = new Intent(Intent.ACTION_SEND);
-            i.putExtra(Intent.EXTRA_STREAM, photoUri);
-            i.setType("image/jpeg");
-            startActivity(i);
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     //código para compartilhamento da foto/imagem
